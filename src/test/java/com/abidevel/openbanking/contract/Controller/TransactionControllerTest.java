@@ -1,6 +1,7 @@
 package com.abidevel.openbanking.contract.Controller;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -18,6 +19,7 @@ class TransactionControllerTest extends ControllerTest {
     }
 
     @Test()
+    @DisplayName("Perform a transaction request with a valid transaction number, assert that response is ok, and a suitable payload is returned.")
     void testRetrieveAllTransactionForAccountNumber() throws Exception {
         mvc.perform(
             get("/transactions/1234567/")

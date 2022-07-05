@@ -2,6 +2,8 @@ plugins {
 	id 'org.springframework.boot' version '2.7.0'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
+	id "org.openapi.generator" version "5.0.0"
+
 }
 
 group = 'com.abidevel.openbanking'
@@ -33,12 +35,35 @@ dependencies {
 	testImplementation "org.testcontainers:junit-jupiter:1.17.2"
 	testImplementation "org.testcontainers:mysql:1.17.2"
 
-
-
-
-	
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+task examplePaths {
+    doLast {
+        println rootDir
+		println buildDir
+    }
+}
+
+task aman{
+	doFirst{
+		println "amandeep"
+	}
+}
+openApiGenerate {
+	
+    generatorName = "spring"
+    inputSpec = "$rootDir/open-api/account-info-openapi.yaml".toString()
+    outputDir = "$buildDir/generated".toString()
+    apiPackage = "com.abidevel.openbanking.contract.integration"
+    invokerPackage = "com.abidevel.openbanking.contract.invoker"
+    modelPackage = "com.abidevel.openbanking.contract.model"
+	validateSpec = false
+}
+openApiValidate {
+   inputSpec = "$rootDir/open-api/account-info-openapi.yaml".toString()
+   recommend = true
 }
