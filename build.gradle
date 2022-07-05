@@ -2,7 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.7.0'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
-	id "org.openapi.generator" version "5.0.0"
+	id "org.openapi.generator" version "5.1.1"
 
 }
 
@@ -34,6 +34,9 @@ dependencies {
 	testImplementation "org.testcontainers:testcontainers:1.17.2"
 	testImplementation "org.testcontainers:junit-jupiter:1.17.2"
 	testImplementation "org.testcontainers:mysql:1.17.2"
+	implementation 'io.springfox:springfox-swagger2:2.9.2'
+	implementation 'io.springfox:springfox-swagger-ui:2.9.2'
+	implementation 'org.openapitools:jackson-databind-nullable:0.2.1'
 
 }
 
@@ -41,29 +44,67 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+// test {
+// 	useJUnitPlatform()
+// }
+
+
 task examplePaths {
     doLast {
         println rootDir
 		println buildDir
-    }
+	}
 }
 
 task aman{
 	doFirst{
-		println "amandeep"
+		println "$rootDir/open-api/account-info-openapi.json".toString()
+		println "$buildDir/generated/src/main/java/com/acme/banking/model"
+		println "$rootDir/src/main/java/com/acme/banking/model"
+		println "$rootDir/src/main/java/com"
 	}
 }
+
 openApiGenerate {
-	
-    generatorName = "spring"
-    inputSpec = "$rootDir/open-api/account-info-openapi.yaml".toString()
+	generatorName = "spring"
+	generateModelDocumentation = false
+	generateApiDocumentation = false
+ 	inputSpec = "$rootDir/open-api/account-info-openapi.json".toString()
     outputDir = "$buildDir/generated".toString()
-    apiPackage = "com.abidevel.openbanking.contract.integration"
-    invokerPackage = "com.abidevel.openbanking.contract.invoker"
-    modelPackage = "com.abidevel.openbanking.contract.model"
-	validateSpec = false
+	apiPackage = "com.abidevel.openbanking.banking.integration"
+    invokerPackage = "com.abidevel.openbanking.banking.invoker"
+    modelPackage = "com.abidevel.openbanking.banking.model"
+	configOptions = [
+			dateLibrary: "java8",
+			basePackage: "com.abidevel.openbanking.contract",
+			interfaceOnly: "true",
+			useBeanValidation: "false"
+	]
+	
 }
-openApiValidate {
-   inputSpec = "$rootDir/open-api/account-info-openapi.yaml".toString()
-   recommend = true
+
+task srcZip(type: Zip) {
+	classifier = 'src'
+	from projectDir
+	include 'open-api/*'
+	include 'src/**/*'
+	include '*.gradle'
+	include 'README.md'
+	doLast {
+		println "Path to zip: $archivePath.path"
+	}
 }
+
+
+task copyGenerated(type: Copy) {
+	from "$buildDir/generated/src/main/java/com/abidevel/openbanking/banking/"
+	into "$rootDir/src/main/java/com/abidevel/openbanking/banking/"
+}
+
+// task cleanGenerated(type: Delete) {
+// 	delete "$rootDir/src/main/java/com"
+// }
+
+//clean.dependsOn cleanGenerated
+
+
