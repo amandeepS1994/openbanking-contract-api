@@ -9,35 +9,38 @@ import org.springframework.stereotype.Service;
 import com.abidevel.openbanking.contract.integration.OpenBankingApi;
 import com.abidevel.openbanking.contract.model.Transaction;
 import com.abidevel.openbanking.contract.model.enumeration.TransactionType;
+import com.abidevel.openbanking.contract.repository.TransactionRepository;
 import com.abidevel.openbanking.contract.service.MerchantDetailService;
 import com.abidevel.openbanking.contract.service.TransactionService;
 import io.github.resilience4j.circuitbreaker.annotation.*;
+import lombok.extern.slf4j.Slf4j;
 
 
 @Service
+@Slf4j
 public class TransactionServiceImplementation implements TransactionService {
 
     private final OpenBankingApi openBankingApi;
     private final MerchantDetailService merchantDetailService;
+    private final TransactionRepository transactionRepository;
 
-    public TransactionServiceImplementation (OpenBankingApi openBankingApi, MerchantDetailService merchantDetailService) {
+    public TransactionServiceImplementation (OpenBankingApi openBankingApi, MerchantDetailService merchantDetailService, TransactionRepository transactionRepository) {
         this.openBankingApi = openBankingApi;
         this.merchantDetailService = merchantDetailService;
+        this.transactionRepository = transactionRepository;
     }
 
     @Override
     @CircuitBreaker(name = "open-banking-breaker", fallbackMethod = "openBankingFallback")
     public List<Transaction> findAllByAccountNumber(Long accountNumber) {
-        //openBankingApi.findAllTransactionsByAccountNumber(accountNumber);
+        return openBankingApi.findAllTransactionsByAccountNumber(accountNumber);
         // enrich the transaction information
-        return List.of(
-            new Transaction(1l, TransactionType.CASH.name(), OffsetDateTime.now(), accountNumber, "£", 12345678l, "Bookers", "merchantLogo.svg"),
-            new Transaction(2l, TransactionType.CRYPTO.name(), OffsetDateTime.now(), accountNumber, "£", 12345678l, "Crypto", "crypto.com.svg"),
-            new Transaction(3l, TransactionType.CHEQUE.name(), OffsetDateTime.now(), accountNumber, "£", 12345678l, "Taj", "Taj.svg"));
     }
 
     private List<Transaction> openBankingFallback (Long accountNumber, final Throwable throwable) {
-        return Collections.emptyList();
+        log.info("Circuit Breaker.");
+       // return transactionRepository.findByAccountNumber(accountNumber);
+        return transactionRepository.findAll();
     }
     
 }
