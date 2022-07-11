@@ -24,6 +24,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation platform('io.projectreactor:reactor-bom:2020.0.17')
+    implementation 'io.projectreactor.netty:reactor-netty-core' 
+    implementation 'io.projectreactor.netty:reactor-netty-http'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -37,6 +41,13 @@ dependencies {
 	implementation 'io.springfox:springfox-swagger2:2.9.2'
 	implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 	implementation 'org.openapitools:jackson-databind-nullable:0.2.1'
+	implementation 'io.github.resilience4j:resilience4j-spring-boot2:1.7.1'
+
+    implementation 'io.github.resilience4j:resilience4j-all:1.7.1'
+
+
+
+	
 
 }
 

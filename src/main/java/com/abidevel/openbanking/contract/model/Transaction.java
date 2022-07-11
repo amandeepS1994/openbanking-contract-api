@@ -1,5 +1,6 @@
 package com.abidevel.openbanking.contract.model;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -30,9 +31,8 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Enumerated(EnumType.STRING)
-    private TransactionType type;
-    private Date date;
+    private String type;
+    private OffsetDateTime date;
     private Long accountNumber;
     private String currency;
     private Long amount;
