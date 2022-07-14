@@ -42,8 +42,10 @@ dependencies {
 	implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 	implementation 'org.openapitools:jackson-databind-nullable:0.2.1'
 	implementation 'io.github.resilience4j:resilience4j-spring-boot2:1.7.1'
-
     implementation 'io.github.resilience4j:resilience4j-all:1.7.1'
+	implementation 'org.keycloak:keycloak-spring-boot-starter:18.0.2'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.security:spring-security-test'
 
 
 

@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreFilter;
 import org.springframework.stereotype.Service;
 
 import com.abidevel.openbanking.contract.integration.OpenBankingApi;
@@ -32,6 +33,7 @@ public class TransactionServiceImplementation implements TransactionService {
 
     @Override
     @CircuitBreaker(name = "open-banking-breaker", fallbackMethod = "openBankingFallback")
+    @PreFilter("filterObject.accountNumber == accountNumber")
     public List<Transaction> findAllByAccountNumber(Long accountNumber) {
         return openBankingApi.findAllTransactionsByAccountNumber(accountNumber);
         // enrich the transaction information
