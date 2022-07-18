@@ -35,7 +35,7 @@ public class Transaction {
     private OffsetDateTime date;
     private Long accountNumber;
     private String currency;
-    private Long amount;
+    private Double amount;
     private String merchantName;
     private String merchantLogo;
 }

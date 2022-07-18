@@ -3,6 +3,8 @@ package com.abidevel.openbanking.contract.service.implementation;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.security.access.prepost.PreFilter;
 import org.springframework.stereotype.Service;
@@ -33,15 +35,18 @@ public class TransactionServiceImplementation implements TransactionService {
 
     @Override
     @CircuitBreaker(name = "open-banking-breaker", fallbackMethod = "openBankingFallback")
-    @PreFilter("filterObject.accountNumber == accountNumber")
+    // @PreFilter("filterObject.accountNumber == accountNumber")
     public List<Transaction> findAllByAccountNumber(Long accountNumber) {
-        return openBankingApi.findAllTransactionsByAccountNumber(accountNumber);
-        // enrich the transaction information
+        List<Transaction> transactions = openBankingApi.findAllTransactionsByAccountNumber(accountNumber);
+            transactions.stream()
+            .filter(Objects::nonNull)
+            .forEach(tran -> tran.setMerchantLogo(merchantDetailService.retrieveMerchantLogo(tran.getMerchantName()).orElse(String.format("%s.png", tran.getMerchantName()))));
+        return transactions;
     }
 
     private List<Transaction> openBankingFallback (Long accountNumber, final Throwable throwable) {
         log.info("Circuit Breaker.");
-       // return transactionRepository.findByAccountNumber(accountNumber);
+        log.info(throwable.getMessage());
         return transactionRepository.findAll();
     }
     

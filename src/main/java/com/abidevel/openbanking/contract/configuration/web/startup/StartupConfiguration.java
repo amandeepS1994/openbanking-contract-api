@@ -26,9 +26,9 @@ public class StartupConfiguration implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         transactionRepository.saveAll(List.of(
-            new Transaction(1l, TransactionType.CASH.name(), OffsetDateTime.now(), 24545L, "£", 12345678l, "Bookers", "merchantLogo.svg"),
-            new Transaction(2l, TransactionType.CRYPTO.name(), OffsetDateTime.now(), 24545L, "£", 12345678l, "Crypto", "crypto.com.svg"),
-            new Transaction(3l, TransactionType.CHEQUE.name(), OffsetDateTime.now(), 24545L, "£", 12345678l, "Taj", "Taj.svg")));
+            new Transaction(1l, TransactionType.CASH.name(), OffsetDateTime.now(), 24545L, "£", 12345678.1, "Bookers", "merchantLogo.svg"),
+            new Transaction(2l, TransactionType.CRYPTO.name(), OffsetDateTime.now(), 24545L, "£", 12345678.1, "Crypto", "crypto.com.svg"),
+            new Transaction(3l, TransactionType.CHEQUE.name(), OffsetDateTime.now(), 24545L, "£", 12345678.1, "Taj", "Taj.svg")));
     }
     
 }

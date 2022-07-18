@@ -3,6 +3,9 @@ package com.abidevel.openbanking.contract.model.adapter;
 import com.abidevel.openbanking.banking.model.OBCreditDebitCode1;
 import com.abidevel.openbanking.banking.model.OBTransaction6;
 import com.abidevel.openbanking.contract.model.Transaction;
+import com.abidevel.openbanking.contract.model.enumeration.TransactionType;
+import com.abidevel.openbanking.contract.utility.TransactionUtility;
+
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,19 +28,18 @@ public class ObTransactionAdapter {
         this.isSuccessful = validateValues(obTransaction);
         return isSuccessful ? Transaction.builder()
                 .accountNumber(Long.parseLong(obTransaction.getAccountId()))
-                .type(obTransaction.getCreditDebitIndicator().toString())
+                .type(TransactionUtility.retrieveTransactionType().name())
                 .currency(obTransaction.getCurrencyExchange().getUnitCurrency())
-                .amount(null)
+                .amount(Double.parseDouble(obTransaction.getAmount().getAmount()))
                 .merchantName(obTransaction.getMerchantDetails().getMerchantName())
                 .date(obTransaction.getValueDateTime())
                 .build() : null;
     }
 
     private boolean validateValues (OBTransaction6 obTransaction6) {
-        return Objects.nonNull(obTransaction6) && Objects.nonNull(obTransaction6.getAccountId()) && Objects.nonNull(obTransaction6.getCreditDebitIndicator())
-                && Objects.nonNull(obTransaction6.getCurrencyExchange()) && Objects.nonNull(obTransaction6.getAmount()) && Objects.nonNull(obTransaction6.getMerchantDetails())
+        return Objects.nonNull(obTransaction6) && Objects.nonNull(obTransaction6.getAccountId()) && Objects.nonNull(obTransaction6.getCurrencyExchange()) 
+                && Objects.nonNull(obTransaction6.getAmount()) && Objects.nonNull(obTransaction6.getMerchantDetails())
                 && Objects.nonNull(obTransaction6.getValueDateTime());
     }
-
 
 }
