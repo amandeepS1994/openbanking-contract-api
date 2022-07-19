@@ -2,6 +2,7 @@ package com.abidevel.openbanking.contract.model;
 
 import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.Objects;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -30,6 +31,7 @@ import lombok.ToString;
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Exclude
     private Long id;
     private String type;
     private OffsetDateTime date;
@@ -37,5 +39,6 @@ public class Transaction {
     private String currency;
     private Double amount;
     private String merchantName;
+    @EqualsAndHashCode.Exclude
     private String merchantLogo;
 }

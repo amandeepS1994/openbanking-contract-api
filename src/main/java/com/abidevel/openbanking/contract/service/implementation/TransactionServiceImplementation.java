@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreFilter;
 import org.springframework.stereotype.Service;
 
@@ -37,11 +38,14 @@ public class TransactionServiceImplementation implements TransactionService {
     @CircuitBreaker(name = "open-banking-breaker", fallbackMethod = "openBankingFallback")
     // @PreFilter("filterObject.accountNumber == accountNumber")
     public List<Transaction> findAllByAccountNumber(Long accountNumber) {
-        List<Transaction> transactions = openBankingApi.findAllTransactionsByAccountNumber(accountNumber);
-            transactions.stream()
+        return insertMarchantLogos(openBankingApi.findAllTransactionsByAccountNumber(accountNumber));
+    }
+
+    private List<Transaction> insertMarchantLogos (List<Transaction> inputTransactions) {
+        inputTransactions.stream()
             .filter(Objects::nonNull)
             .forEach(tran -> tran.setMerchantLogo(merchantDetailService.retrieveMerchantLogo(tran.getMerchantName()).orElse(String.format("%s.png", tran.getMerchantName()))));
-        return transactions;
+        return inputTransactions;
     }
 
     private List<Transaction> openBankingFallback (Long accountNumber, final Throwable throwable) {
@@ -49,5 +53,35 @@ public class TransactionServiceImplementation implements TransactionService {
         log.info(throwable.getMessage());
         return transactionRepository.findAll();
     }
+
+    @Scheduled(fixedRate = 300000l)
+    public void updateTransactionList() {
+         // Gather all unique Ids
+        log.info("Executing Scheduling");
+        List<Long> accountIds = retrieveAllAccountIds();
+        if (!accountIds.isEmpty()) {
+            accountIds.forEach(id -> pollByAccountNumber(id));
+        }
+    }
+
+    private void pollByAccountNumber (Long accountNumber) {
+        // retrieve all transactions from API
+        log.info("Retrieving transactions.");
+        List<Transaction> obTransactions = this.openBankingApi.findAllTransactionsByAccountNumber(accountNumber);
+        List<Transaction> dbTransactions = transactionRepository.findByAccountNumber(accountNumber);
+        // remove transactions
+        obTransactions.removeAll(dbTransactions);
+        log.info("Persisting Transactions " + Integer.toString(obTransactions.size()));
+        // if theres a difference then persist on the database
+        transactionRepository.saveAll(obTransactions);
+        
+    }
+
+    private List<Long> retrieveAllAccountIds () {
+        return this.transactionRepository.findAllDistinct();
+    }
+
+
+
     
 }
