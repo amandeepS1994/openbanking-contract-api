@@ -1,5 +1,6 @@
 package com.abidevel.openbanking.contract.model;
 
+import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.Objects;
@@ -13,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.abidevel.openbanking.contract.model.enumeration.TransactionType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,6 +36,7 @@ public class Transaction {
     @EqualsAndHashCode.Exclude
     private Long id;
     private String type;
+    @JsonIgnore
     private OffsetDateTime date;
     private Long accountNumber;
     private String currency;

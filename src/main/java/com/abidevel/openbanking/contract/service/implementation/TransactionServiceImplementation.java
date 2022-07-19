@@ -1,18 +1,15 @@
 package com.abidevel.openbanking.contract.service.implementation;
 
-import java.time.OffsetDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.access.prepost.PreFilter;
 import org.springframework.stereotype.Service;
 
 import com.abidevel.openbanking.contract.integration.OpenBankingApi;
 import com.abidevel.openbanking.contract.model.Transaction;
-import com.abidevel.openbanking.contract.model.enumeration.TransactionType;
 import com.abidevel.openbanking.contract.repository.TransactionRepository;
 import com.abidevel.openbanking.contract.service.MerchantDetailService;
 import com.abidevel.openbanking.contract.service.TransactionService;
@@ -36,6 +33,7 @@ public class TransactionServiceImplementation implements TransactionService {
 
     @Override
     @CircuitBreaker(name = "open-banking-breaker", fallbackMethod = "openBankingFallback")
+    @Cacheable(cacheNames = "transactionCache")
     // @PreFilter("filterObject.accountNumber == accountNumber")
     public List<Transaction> findAllByAccountNumber(Long accountNumber) {
         return insertMarchantLogos(openBankingApi.findAllTransactionsByAccountNumber(accountNumber));
