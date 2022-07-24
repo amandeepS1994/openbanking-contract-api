@@ -1,0 +1,87 @@
+version: "3.0"
+services:
+  open-banking-service:
+    image: abidevel/open-banking-service:v0.2
+    container_name: open-banking-service
+    env_file: env
+    networks:
+      - open-banking-network
+    ports:
+      - "8081:8081"
+    depends_on:
+      - database
+      - redis-store
+      - open-banking-testnet
+      - keycloak-service
+    # links:
+    #   - database
+    #   - redis-store
+    #   - open-banking-testnet
+    #   - keycloak-service
+  open-banking-testnet:
+    image: abidevel/open-banking-testnet:v0.1
+    container_name: open-banking-testnet
+    ports:
+      - "9999:8081"
+    environment:
+      port: 8081
+      MYSQL_HOST: MySQL-Database
+      DATABASE_PORT: 3306
+      DATABASE_NAME: banking
+      DATABASE_USER: 
+      DATABASE_PASSWORD: 
+    depends_on:
+      - database
+    # links:
+    #   - database
+    #   - open-banking-service
+    networks:
+      - open-banking-network
+  database:
+    image: mysql:latest
+    container_name: MySQL-Database
+    environment:
+       MYSQL_ROOT_PASSWORD: 
+    # links:
+    #   - open-banking-service
+    #   - open-banking-testnet
+    networks:
+      - open-banking-network
+    volumes:
+      - docker-mysql
+  redis-store:
+    image: redis
+    container_name: redis-store
+    # links:
+    #   - open-banking-service
+    networks:
+      - open-banking-network
+    volumes:
+      - redis-store
+    ports:
+      - "9002:6379"
+  keycloak-service:
+    image: jboss/keycloak
+    container_name: keycloak
+    environment:
+      KEYCLOAK_USER: 
+      KEYCLOAK_PASSWORD: 
+      DB_VENDOR: h2
+    ports:
+      - "9001:8080"
+    networks:
+      - open-banking-network
+    # links:
+    #   - open-banking-service
+    volumes:
+      - keycloak
+volumes:
+  docker-mysql:
+    # external: true
+  redis-store:
+    # external: true
+  keycloak:
+    # external: true
+networks:
+  open-banking-network:
+

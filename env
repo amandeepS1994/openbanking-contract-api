@@ -1,0 +1,12 @@
+port=8081
+dbuser=
+dbpass=
+dbhost=MySQL-Database
+dbport=3306
+khost=keycloak
+kport=8080
+kurl=auth
+redishost=redis-store
+redisport=6379
+testnethost=open-banking-testnet
+testnetport=8081

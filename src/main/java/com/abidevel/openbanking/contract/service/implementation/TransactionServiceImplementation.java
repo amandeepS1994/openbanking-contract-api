@@ -57,6 +57,7 @@ public class TransactionServiceImplementation implements TransactionService {
          // Gather all unique Ids
         log.info("Executing Scheduling");
         List<Long> accountIds = retrieveAllAccountIds();
+        log.info("Total AccountIds: " + Integer.toString(accountIds.size()));
         if (!accountIds.isEmpty()) {
             accountIds.forEach(id -> pollByAccountNumber(id));
         }
